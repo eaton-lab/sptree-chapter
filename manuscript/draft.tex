@@ -1,0 +1,249 @@
+% !TEX program = pdflatex --shell-escape
+
+\documentclass[11pt]{article}
+\usepackage{natbib}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage[letterpaper, left=1.0in, right=1.0in, top=1.0in, bottom=1.0in]{geometry}
+\usepackage{ragged2e}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{lineno}
+\usepackage{multirow}
+\usepackage{pdflscape}
+\usepackage{booktabs}
+\usepackage[backref=page]{hyperref}
+\usepackage{hyperref}
+\usepackage{rotating}
+\usepackage{booktabs}
+\usepackage[hypcap, labelsep=period]{caption}
+\usepackage{array}
+\usepackage{color}
+
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\hypersetup{
+     colorlinks   = true,
+     citecolor    = Indigo,
+     linkcolor    = DarkCyan
+}
+\setlength{\RaggedRightParindent}{\parindent}
+
+\linenumbers
+\linespread{1.0}
+
+\begin{document}
+
+\begin{center}
+% {\bf \Large Bridging the Gap: The Multispecies Coalescent, Linkage, and Sliding Window Phylogenetic Inference}\\[0.25cm]
+{\bf \Large The Multispecies Coalescent in Space and Time}\\[0.25cm]
+
+Patrick F. McKenzie$^{1}$ and Deren A. R. Eaton$^{1}$\\[0.25cm]
+
+$^{1}$ Department of Ecology, Evolution, and Environmental Biology, Columbia University
+\end{center}
+
+\RaggedRight
+
+
+\subsection{Introduction--} 
+
+% Whole genomes and linked genealogical data are the next frontier.
+\noindent The multispecies coalescent (MSC) is a model for inferring a phylogenetic tree from a distribution of sampled genealogies -- or in practice, a distribution of empirical gene trees inferred from multi-locus genetic data \citep{maddison_gene_1997, maddison_inferring_2006, degnan_gene_2009}. By integrating over genealogical variation the MSC improves estimation of both tree topologies and divergence times, in addition to providing estimates of other demographic parameters of interest, such as population sizes \citep{edwards_perspective_2000, fang_estimating_2020}. 
+Its influence on phylogenetics has been broad and pervasive, as is evident in the many extensions that have been developed for incorporating the MSC into studies of gene duplication and loss \citep{rasmussen_unified_2012}, introgression \citep{yu_coalescent_2011}, and even character evolution \citep{guerrero_quantifying_2018}. As we approach one decade since the publication of the first volume of \emph{Estimating Species Trees} \citep{knowles_estimating_2011} it is valuable to re-examine the MSC, and its assumptions, to ask how we can best approach new challenges and opportunities in the coming era of ubiquitous whole genome data sets. One area where we believe the MSC has great potential is in improving the inference of local genealogical variation across whole genomes. 
+
+% In particular, we pose the question here: how can the MSC be extended to examine genealogical variation across whole genome alignments, as opposed to or large syntenic blocks of sampled genomes?
+% One area where the MSC has to be applied is in the inference of local genealogical variation across whole genomes. 
+
+% A middle ground between these two approaches could be imagined, in which a hierarchical model informs priors for the inference of local gene trees where there is often insufficient information to make accurate inferences.
+% Here we show that these two approaches can instead be integrated. Using a parameterized species tree inferred from unlinked loci across the genome, a sliding window approach can then be implemented which incorporates prior expectations on the similarity of neighboring gene trees. As genome-wide multi-species alignments become increasingly available we expect this approach will prove valuable for improving local genealogy inference. 
+
+% \subsubsection{Genetic linkage}
+
+% The primary barrier to integrating these methods is the effect of genetic linkage. A 
+A key distinction between species tree inference under the MSC and the inference of genealogies sequentially distributed across genomes is the effect of genetic linkage. The MSC explicitly assumes that genealogies are unlinked, i.e., statistically independent, whereas genealogies distributed across a contiguous genomic region are not independent, and expected to be spatially auto-correlated. This correlation (linkage disequilibrium) decays over time as recombination causes samples within different genomic regions to trace back to different sampled ancestors \citep{hudson_coalescent_1988}. While this decay function has been well studied in the context of single populations \citep{mcvean_approximating_2005}, its effect on the similarity of genealogies constrained by a species tree model is poorly understood, including the influence of species tree parameters. Recent algorithmic advances have now made it possible to efficiently simulate entire chromosomes with recombination to produce correlated tree sequences \citep{kelleher_efficient_2016}, which presents a powerful new opportunity to investigate the relationship between species tree parameters and sequential genealogical patterns across genomes.
+
+Genome-wide phylogenetic inference is currently approached from two methodological extremes: either (1) a single species tree is inferred as a hierarchical model to describe the expected distribution of unlinked genealogies across the genome; or (2) no hierarchical model is assumed, and gene trees are inferred independently in sliding windows of concatenated sequences along the genome \citep{martin_exploring_2017}. The latter approach is often applied to identify introgressed regions based on their deviation from a genome-wide average \citep{wang_evidence_2019}. However, the dearth of information contained within small genomic windows can cause high gene tree estimation error in this approach, and similarly, increasing window size too large will cause errors from concatenation of multiple distinct histories. The MSC provides a potential path forward. 
+% , and an intermediate strategy between the current extremes for analyzing genome-wide data. 
+A parameterized species tree inferred from unlinked locus data may be able to provide priors on the expected distribution of genealogies both globally across the genome, as well as spatially among linked trees.
+
+In this chapter we explore this concept by using simulations to estimate the effect of species tree parameters on the rate of decay of phylogenetic similarity across the spatial extent of a chromosome with a uniform recombination rate. We show that a decay function can be estimated to describe the spatial auto-correlation of genealogies, and that by incorporating this function into gene tree inference, accuracy can be significantly improved compared to existing sliding window methods. 
+
+
+% Here we show that these two approaches can instead be integrated. Using a parameterized species tree inferred from unlinked loci across the genome, a sliding window approach can then be implemented which incorporates prior expectations on the similarity of neighboring gene trees. As genome-wide multi-species alignments become increasingly available we expect this approach will prove valuable for improving local genealogy inference. 
+
+% MSC, and the inference of genealogies spatially distributed across genomes, is the effect of genetic linkage. The MSC explicitly assumes that genealogies are unlinked, i.e., statistically independent, whereas genealogies distributed across a genomic region are not independent, and expected to be spatially auto-correlated. In the context of the coalescent, this correlation is caused by one or more samples sharing the same ancestors in adjacent regions \citep{hudson_coalescent_1988}, which yields similar substitution patterns causing linkage disequilibrium. Recombination reduces linkage over time by causing different genomic regions to trace back to different sampled ancestors. The ability to simulate the coalescent process with recombination to produce correlated tree sequences over large genomic regions \citep{kelleher_efficient_2016} has opened many new opportunities for studying genome-wide genealogical patterns. 
+
+% Despite our increasing understanding of genome-wide genealogical patterns such information has yet to be incorporated into phylogenetic estimation. Sliding-window phylogenetic analyses are now commonly employed, typically using maximum-likelihood estimation on concatenated sequences, or distance-based approaches (...). 
+
+
+\subsection{Coalescent simulations}
+To investigate genealogical variation along chromosomes we simulated genealogies under a range of species tree models in Python using the \emph{ipcoal} package \citep{mckenzie_ipcoal_2020}. This takes as input a tree topology and demographic parameters (divergence times, effective population sizes, mutation rate, and recombination rate) to generate a parameterized simulator for the program \emph{msprime} \citep{kelleher_efficient_2016}. Using this model we then simulated coalescent genealogies constrained by a species tree topology. To generate linked trees we simulated a 1Mb chromosome and recorded the true genealogy spanning each position of its length, since different genealogies span different intervals along the chromosome between recombination crossovers locations. To generate unlinked trees we simulated 500 independent loci of length one and stored the single observed genealogy from each locus. Species trees and genealogies were plotted and manipulated using the Python package \emph{toytree} \citep{eaton_toytree_2020}. Annotated code to reproduce all analyses in this chapter is organized into jupyter notebooks and available at https://github.com/eaton-lab/sptree-chapter.
+
+The distributions of linked and unlinked genealogies simulated on the same species tree are easy to distinguish when visualized, as linked genealogies exhibit significant auto-correlation  while unlinked genealogies exhibit greater variation (Fig. 1). We explored a range of parameters to realistically describe linked and unlinked genealogical variation in genome-wide phylogenetic data sets. To focus our analyses on fewer total parameters we performed all simulations on completely imbalanced tree shapes (but different tree sizes) in which internode lengths and effective population sizes of internal edges are all set to be equal. All simulations were performed using a per-site per-generation recombination rate of 1e$^{-9}$, and in the case when sequence data was generated, a per-site per-generation mutation rate of 1e$^{-8}$ applied under the JC69 substitution model. The parameters we aim to investigate for their effect on the distribution of genealogies include tree size (number of tips), the probability of incongruence (internode edge lengths in coalescent units), and tree height (the number of generations between internodes). 
+
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.8\textwidth]{./figures/Fig-1}
+		\caption{
+			The effect of genetic linkage on the distribution of genealogies simulated on two species trees with different numbers of tips but the same probability of incongruence at each edge (all internode lengths are 0.5 coalescent units). 	% The genome-wide distribution of genealogies differs from that among neighboring regions of the genome where genealogies are correlated, and the difference is greater in trees with more sampled tips. (a-b) 
+			% Linked or unlinked genealogies were simulated on two species trees the same probability of discordance between nodes (i.e., 		internode distances are the same in coalescent units). (c-f) 
+			Genealogies are plotted in the same tip order as the species trees to highlight incongruence (c-f). Linked genealogies are spatially correlated along the length of a chromosome, because many samples share the same ancestors until a recombination event occurs (c, e). Unlinked genealogies are independent and exhibit greater variation among a sampled set (d, f). Species trees with more tips exhibit a greater number of overall incongruent topologies, and thus neighboring linked genealogies in large trees are more similar to each other relative to random unlinked trees than in species trees with fewer tips.
+		}
+		\label{fig:1}
+\end{figure}
+
+
+% Describe Figure 1: difference between linked and unlinked trees.
+\subsubsection{Units, space, and time}
+The effect of time, measured in units of generations, is not typically of interest for studies of the MSC, since the probability of incongruence (among unlinked genealogies) can be explained entirely by internode lengths measured in coalescent units ($t_c$), which is calculated as $t_{c} = t_{g} / 2N_{e}$, where $t_g$ is time in generations and $N_e$ is the effective population size. Because $t_c$ is a ratio of time and population size, the absolute value of $t_{g}$ has not been of interest, only its relation to $N_{e}$. However, in the context of a sequential coalescent process it turns out that $t_{g}$ does matter, since recombination is modeled as a per-generation process, and so both $t_g$ and $N_e$ affect the number of recombination events, and thus the similarity of neighboring genealogies.
+
+% The effect of tree HEIGHT
+The effect of time in units of generations is demonstrated in Table 1. Here we simulated linked and unlinked genealogies on the same species trees, over a range of parameters, and in each data set measured the average Robinson-Foulds (RF) distance between all pairwise unlinked genealogies, and in the case of linked trees, between 1000 pairs of genealogies randomly sampled from positions that are spaced 10Kb apart. In the unlinked data sets $t_g$ has no effect on the similarity of genealogies -- only $t_c$ is relevant -- as has been traditionally recognized in the MSC. However, for linked genealogies $t_g$ has a large effect. When edge lengths are longer in units of generations the size of non-recombined blocks is smaller, and the average RF distance between neighboring genealogies is greater. 
+% To keep $t_c$ constant we scaled $N_e$ as $t_g$ changes, but it should be noted that $Ne$ similarly affects the rate of observed recombination events in the history of the sample.
+
+A notable result of these simulations is the observation that the size of non-recombined genomic blocks becomes very small in certain regions of parameters space, particularly when the internode lengths in units of generations are very long. This is troubling for the MSC which requires that loci represent a single genealogical history as opposed to multiple concatenated genealogies. The impact of recombination within loci has been investigated previously, both in the first edition of this book \citep{castillo-ramirez_bayesian_2010}, as well as in a series of critical examinations of the impact of 'concatalescence' \citep{springer_gene_2016}. At issue is whether gene tree estimation error is elevated when concatenating data from multiple genealogies into a single locus. The results from our simulations suggest there are some regions of parameter space where the size of non-recombined blocks becomes quite small, and so this issue may warrant further examination. In this paper, however, rather than examine recombination and its effects as a critique on existing MSC approaches, we aim instead to explore how linkage among recombined genealogical blocks of the genome can possibly be a useful source of information when analysing whole genomes. 
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+{} &  Ntips &  t$_c$ &  t$_g$ &   N$_e$  &  block-size  & RF$_{unlinked}$ & RF$_{linked}$ &  half-life\\
+\midrule
+0  &     10 &  0.20 &   1e4 &  2.5e4 &  1706  &     14.58 &     9.13  &  6576   \\
+1  &     10 &  0.20 &   1e5 &  2.5e5 &   174  &     14.59 &    14.49  &  607  \\
+2  &     10 &  0.20 &   1e6 &  2.5e6 &    18  &     14.59 &    14.51  &  67  \\
+3  &     10 &  1.00 &   1e4 &  5.0e3 &  4761  &      7.79 &     2.91  &  16715  \\
+4  &     10 &  1.00 &   1e5 &  5.0e4 &   525  &      7.81 &     6.48  &  2359  \\
+5  &     10 &  1.00 &   1e6 &  5.0e5 &    56  &      7.79 &     7.57  &  270  \\
+6  &     10 &  2.00 &   1e4 &  2.5e3 &  8849  &      2.86 &     0.50  &  22627  \\
+7  &     10 &  2.00 &   1e5 &  2.5e4 &   906  &      2.87 &     2.19  &  4659  \\
+8  &     10 &  2.00 &   1e6 &  2.5e5 &    93  &      2.88 &     2.88  &  443  \\
+\hline
+9  &     50 &  0.20 &   2e3 &  5.0e3 &   1485 &    91.50 &    36.58   &  15890  \\
+10 &     50 &  0.20 &   2e4 &  5.0e4 &    149 &    91.51 &    83.36   &  1838  \\
+11 &     50 &  0.20 &   2e5 &  5.0e5 &     15 &    91.63 &    91.61   &  185  \\
+12 &     50 &  1.00 &   2e3 &  1.0e3 &   4830 &    46.82 &     3.80   &  84732  \\
+13 &     50 &  1.00 &   2e4 &  1.0e4 &    509 &    46.90 &    24.60   &  11884  \\
+14 &     50 &  1.00 &   2e5 &  1.0e5 &     51 &    46.77 &    45.00   &  1233  \\
+15 &     50 &  2.00 &   2e3 &  5.0e2 &   9900 &    17.16 &     0.49   &  124416  \\
+16 &     50 &  2.00 &   2e4 &  5.0e3 &    866 &    17.22 &     5.29   &  23019  \\
+17 &     50 &  2.00 &   2e5 &  5.0e4 &     87 &    17.23 &    16.08   &  2048  \\
+\hline
+18 &    100 &  0.20 &   1e3 &  2.5e3 &   1345 &     187.62 &    47.74  &  26873   \\
+19 &    100 &  0.20 &   1e4 &  2.5e4 &    138 &     187.60 &   156.68  &  3128   \\
+20 &    100 &  0.20 &   1e5 &  2.5e5 &     14 &     187.65 &   186.65  &  345   \\
+21 &    100 &  1.00 &   1e3 &  5.0e2 &   5405 &      95.23 &     3.95  &  178443   \\
+22 &    100 &  1.00 &   1e4 &  5.0e3 &    474 &      95.16 &    30.32  &  22688  \\
+23 &    100 &  1.00 &   1e5 &  5.0e4 &     51 &      94.91 &    85.61  &  2499   \\
+24 &    100 &  2.00 &   1e3 &  2.5e2 &   7299 &      35.40 &     1.24  &  218558   \\
+25 &    100 &  2.00 &   1e4 &  2.5e3 &    877 &      35.37 &     6.44  &  39616   \\
+26 &    100 &  2.00 &   1e5 &  2.5e4 &     85 &      35.33 &    28.59  &  4169   \\
+\bottomrule
+\end{tabular}
+
+% \toprule
+% Ntips & $T_g$  &  $t_g$ &  $t_c$ &  $N_e$  &  gblock size &  RF-unlinked &  RF-linked-5K & RF-linked-10K \\
+% \midrule
+% 50 & 1e$^5$ &  2e$^3$  & 0.2 &   5e$^3$ &   2538$\pm$2662  &  74.99$\pm$6.94 &  6.614$\pm$0  & 3.21 \\
+% 50 & 1e$^6$ &  2e$^4$  & 0.2 &   5e$^4$ &   286$\pm$295    &  74.96$\pm$6.95 &  38.856$\pm$1 & 12.11 \\
+% 50 & 1e$^7$ &  2e$^5$  & 0.2 &   5e$^5$ &   30$\pm$29      &  74.95$\pm$6.95 &  70.816$\pm$2 & 50.11 \\
+% 50 & 1e$^5$ &  2e$^3$  & 1.0 &   5e$^3$ &   5102$\pm$5270  &  46.90$\pm$7.60 &  1.312$\pm$3  \\
+% 50 & 1e$^6$ &  2e$^4$  & 1.0 &   5e$^4$ &   512$\pm$509    &  46.90$\pm$7.64 &  12.11$\pm$4  \\
+% 50 & 1e$^7$ &  2e$^5$  & 1.0 &   5e$^5$ &   51$\pm$50      &  46.74$\pm$7.59 &  40.21$\pm$4  \\
+% 50 & 1e$^5$ &  2e$^3$  & 2.0 &   5e$^3$ &   8475$\pm$8617  &  17.23$\pm$5.22 &  0.334$\pm$.\\
+% 50 & 1e$^6$ &  2e$^4$  & 2.0 &   5e$^4$ &   845$\pm$810    &  17.30$\pm$5.25 &  2.972$\pm$. \\
+% 50 & 1e$^7$ &  2e$^5$  & 2.0 &   5e$^5$ &   85$\pm$84      &  17.26$\pm$5.28 &  14.034$\pm$. \\
+
+\end{center}
+\caption{
+	Parameter settings used in simulations to examine the distribution of 
+	linked versus unlinked genealogies generated on the same species tree.
+	All simulations were performed on an imbalanced species tree with uniform 
+	internode edge lengths. The edge lengths in units of generations ($t_g$) 
+	were scaled with tree size and height to generate edge lengths in 
+	coalescent ($t_c$) units of 0.2, 1.0, or 2.0. Results are reported as mean values from 500 simulated 
+	genealogies. The size of non-recombined genomic	blocks (block-size) decreases with time in generations. This affects the RF distance between linked genealogies, but not unlinked genealogies. The RF$_unlinked$ distance is shown for random pairs of genealogies separated by 10Kb. The phylogenetic half-life was calculated from fitting an exponential curve to the rate of decay of phylogenetic linkage.
+}
+\end{table}
+
+\subsubsection{Tree size, tree space, and phylogenetic decay}
+The enormous size of phylogenetic tree space is a constant source of computational burden in phylogenetics, but intriguingly, it may actually provide a source of information in the context of the sequential coalescent process. This is because as the size of tree space grows in larger data sets so too does the expected RF distance between any two random unlinked genealogies. This is particularly true when $t_c$ is very small, such that all coalescent events occur deeper than the root of the species tree. In this case the topology of unlinked genealogies is hardly constrained by the species tree at all, and almost any genealogy can be observed. However, adjacent genealogies on the same chromosome are still expected to share significant similarity, since few recombination events are likely to have occurred between them.  Consequently, the degree to which linked genealogies are more similar to each other, \emph{relative} to the similarity among unlinked genealogies, is a function of parameters of the species tree, including the tree size.
+
+This type of relative measurement provides a means to develop a statistic to describe the rate of decay of spatial auto-correlation in genealogies across a genome. We propose the term "phylogenetic linkage" ($PL$) to describe the ratio of RF distances among linked genealogies separated by some genetic distance in the genome relative to the average RF distance among unlinked genealogies. In other words, if two genealogies spaced $d$ distance apart on a chromosome are as different from each other as two randomly sampled unlinked genealogies are on average, then they are effectively unlinked. 
+
+$$ PL(d) = 1 - (RF(d)_{linked} / RF_{unlinked}) $$
+% $$ \lambda_{d} = 1 - (RF_{linked} / RF_{unlinked}) $$
+
+By measuring phylogenetic linkage at increasing genetic distances between genealogies we can infer a rate of decay of phylogenetic linkage across the genome. For each simulated data set we then fit an exponential decay function using the \emph{scipy} package in Python. From the estimated decay rate parameter ($\lambda_d$) we then estimated a phylogenetic linkage half-life, representing the distance in bp at which two genealogies are expected to lose half of their phylogenetic linkage (Table 1; Fig. 2). 
+
+When $t_g$ is larger phylogenetic decay occurs faster, since more recombination events are possible over each internal edge of the tree. Similarly, when $N_e$ is greater (i.e., $t_c$ smaller) recombination events are more likely to cause a change in the topology, and thus phylogenetic linkage decays faster. Finally, when the total tree size is greater linkage decay occurs more slowly, since the average difference between unlinked genealogies is much greater, and thus it takes longer for sufficient spatial information to decay to approach the unlinked mean RF distance. This is best demonstrated by examining rows like 0 and 19 in Table 1, which are identical in parameter settings except for tree size. The rate of decay of phylogenetic linkage is slower in larger trees which exhibit much greater unlinked RF distances.
+
+% The expectation that many gene trees can be sampled from the genome and still have not even one match the true species tree has been demonstrated both theoretically (...) and empirically (rokas). For large trees this also means that \emph{linked genealogies}, in which some samples share the same ancestors in one sampled genealogy as in another, will appear more similar to each other compared to a random expectation in larger trees than they do in smaller trees. 
+
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.8\textwidth]{./figures/Fig-2}
+		\caption{
+		The RF distance between genealogies separated spatially on a chromosome plateaus as linkage decays by recombination, and  approaches the average RF distance between unlinked genealogies (a). The ratio of RF distances between linked and unlinked genealogies (phylogenetic linkage) measured at different genetic distances approximates an exponential decay function (b). Results are shown for data simulated on a 100 tip species tree with internal edge lengths of $t_g$=1e4 generations, and $Ne$ of 1e5, 2e5, or 1e4, corresponding to edge lengths in coalescent units ($t_c$) of 0.2, 1.0, and 2.0, respectively. 
+		% Lower $t_c$ and $Ne$ causes a slower rate of decay of linkage. 
+		}
+		\label{fig:2}
+\end{figure}
+
+
+% Describe table 1: effect of tree height
+% We focus only on a completely imbalanced topologyspecies trees for which internode branch lengths were all scaled to be the same length in coalescent units (time in generations / 2N). In the MSC these edge length parameters are sufficient to describe distribution of genealogies, as they fully describe the probability of coalescence on all edges of the species tree. It terms of spatial coalescent patterns, however, we must additionally incorporate the effect of time on the similarity of neighboring genealogies, since recombination is modeled as a per-site per-generation process. Thus, we also simulated data on species trees with fixed edge lengths but with different lengths in units of generations by scaling the total tree height (1e5, 1e6, or 1e7 generations). To keep edge lengths at a isoform coalescent unit value we scaled Ne on edges accordingly. Finally, we varied the tree size in terms of the number of tips in the imbalanced species trees (10, 25, 50, 100). Our interest here is to explore the effect of the size of phylogenetic tree-space in determining the rate at which similarity among neighboring genealogies decays. By varying theta, treeheight, and treesize we explored a total of 48 parameter combinations.
+
+
+% A strength of the coalescent model (Kingman, Hudson) is the ability to treat the genealogy for a number of samples in a population as a latent (unobserved) random variable, since in a panmictic population the patterns of coalescence will vary widely across the genome. 
+
+% \subsubsection{Terminology}
+% The per-generation per-site recombination rate. The sequentially Markov coalescent with recombination \citep{mcvean_approximating_2005}. The point of the recombination event (indicated by a crossmark) is placed uniformly on the tree. The branch above it is removed and the lineage coalesces back to the remaining tree at a rate proportional to the number of lineages present. This is analogous to performing an subtree-prune-regraft. Only the move is constrained to occur among lineages that are present within the same ancestral edge, which is influenced by additional factors, such as Ne, that affect the probability that samples coalesce before or after a speciation event.
+
+ 
+\subsection{Linked genealogies and gene tree inference}
+
+Unlike in simulations, the true genealogical history for any region of the genome is an unknown and unobservable variable. It is something we must infer based on the signal left by the mutational process. So how can our understanding of the decay of phylogenetic linkage be useful in the context of gene tree inference? One way to approach this problem is to ask what is the expected length over which a site supporting a bipartition in one position of the genome continues to be true in neighboring regions of the genome? 
+
+The standard sliding window approach gives equal weight to all sites within an alignment window. An alternative approach could be to extend the size of the window to ensure that there is sufficient information to infer a resolved gene tree, but to apply variable weights to sites in the alignment such that those near the center of the window have greatest weight, and can override alternative signals. This has the effect that if no local information exists to support the true local genealogy then data from more distant regions can inform that part of the tree, but with decreasing weight as their probability of representing the same genealogy decays with distance. 
+
+% At extreme distances many alternative genealogies are given low weight, which effectively ... weight that converges towards the average information from all unlinked regions, which could be considered a random sample from the species tree.
+
+We implemented a weighted approach to local gene tree inference by using the "-a" weights file argument during maximum likelihood tree estimation in RAxML v.8.2.12 \citep{stamatakis_raxml_2014}. A distribution of site weights was generated to give exponentially decreasing weight to sites on either side of a central position. For computational efficiency we cut-off the window size to the left and right of the center at sites where the weight reached 1/1000 of the center, given the exponential decay rate parameter estimated for that data set.
+
+Decay-weighted gene tree inference was compared to traditional windows with uniform (no) weights. Gene trees were inferred at 25 positions spaced evenly across a 1Mb simulated chromosome. At each position the RF distance between the true genealogy and the inferred gene tree was recorded to measure gene tree estimation accuracy. We tested uniform windows of lengths 1Kb, 2.5Kb, 10Kb, 250Kb, 100Kb, and 1Mb, the last of which represents the total concatenated chromosome gene tree. Decay-function weighted gene trees were estimated in windows with a size determined by the decay rate, and we additionally tested decay rates with 5X and 10X faster rates to examine sensitivity to rate estimation. Gene tree inference comparisons were performed on data set 10 from Table 1, which was selected for its fast rate of decay and high incongruence so that many distinct genealogies would be observed across the chromosome.
+
+The decay-function weighted windows inferred more accurate gene trees on average than uniform windows (Fig. 3). Of the uniform windows, the largest size, representing concatenation of the entire chromosome, performed the worst, while the best window size appears to be between 1000-2500bp. All three decay-function weighted window sizes had lower mean RF scores (greater accuracy) than the best scoring uniform window. The best estimates were observed for the 5X decay rate window, which had a mean RF distance of only 33.2, making it approximately twice as accurate as uniform windows of size 1Kb or 25Kbp. The reason a 5X decay rate performed better than the estimated decay rate may be caused by the cut-off to weighted window sizes that we implemented to improve run times. Additional parameters that we did not explore like the mutation rate and recombination rate will additionally affect the information content within each non-recombined genomic block.
+
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.8\textwidth]{./figures/Fig-3-post2}
+		\caption{
+			Gene tree estimation error at sampled points across a chromosome using different sized alignment windows. Windows with uniform (no) weights performed worse than those with weights distributed by a phylogenetic decay-function, as measured by the RF distance between inferred gene trees and the true simulated genealogy. 
+		}
+\end{figure}
+
+
+\subsubsection*{Conclusions}
+For over a decade the goal of phylogenomic analyses has primarily focused on inferring a single species tree to represent the distribution of genealogical variation across the entire genome. However, as whole genome data has now become available, there is increasing interest in the spatial distribution of genealogies at specific locations across the genome. This type of local ancestry information can be useful for testing evolutionary questions about patterns of hemiplasy versus convergence \citep{guerrero_quantifying_2018}, for identifying introgressed regions \citep{fang_estimating_2020}, and testing hypotheses about adaptation \citep{martin_recombination_2019}. However, despite the development of advanced hierarchical models for inferring species trees, such methods have yet to be developed for spatially linked gene tree estimation.
+
+Here we have demonstrated that the probability of incongruence described by the edge lengths of a species tree in coalescent units does not capture the expected spatial similarity of genealogies across chromosomes. Instead, in addition to the ratio of $t_g$ to $Ne$, which describes the probability of incongruence, it becomes necessary to consider their magnitudes as well. This presents an interesting scenario, where the same $t_c$ edge lengths may be observed in two different clades on a species tree, and one is composed of high $N_e$ and $t_g$, while the other has low $N_e$ and $t_g$. Despite having the same probability of incongruence, the two clades would exhibit very different rates of change in their topology per unit length spatially across the genome. Unlike in our simulations, the rate of decay would likely not be uniform, and would covary more among some edges than others. 
+
+In theory, this expectation could be built into sliding window analyses based on a parameterized species tree inferred from unlinked loci. The simple approach that we implemented here, applying weights to alignment windows, is only a first step. A more appropriate direction to focus in the future would be to use species tree information to establish tree topology priors, in a Bayesian context, that could be used to improve local gene tree estimation by combining both the expected genome-wide distribution of genealogies as well as the expected similarity among neighboring genealogies. In contrast to treating recombination as a source of error for phylogenetic analyses, this direction of research aims to accommodate recombination as a source of historical information. It is no doubt that the MSC will continue to be extended to meet the needs introduced by new types of data, and the many questions that they inspire. 
+
+
+\bibliographystyle{ecol_let}
+\bibliography{ipcoal}
+
+
+\section*{Acknowledgments}
+We thank Lacey Knowles and Laura Kubatko for organizing the Estimating Species book volumes and for inviting us to contribute. This work was supported by a NSF Graduate Research Fellowship to P.F.M and by Columbia University startup funding to D.E. 
+
+\end{document}
+
