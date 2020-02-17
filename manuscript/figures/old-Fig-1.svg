@@ -25,14 +25,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="354.09418"
-     inkscape:cy="172.40693"
+     inkscape:zoom="1.4"
+     inkscape:cx="336.58635"
+     inkscape:cy="161.82167"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g14880"
      showgrid="false"
      units="px"
-     inkscape:window-width="991"
+     inkscape:window-width="1249"
      inkscape:window-height="789"
      inkscape:window-x="394"
      inkscape:window-y="150"
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -908,7 +908,7 @@
                  id="text14503"
                  y="-4.4408921e-16"
                  x="-6.9499998"
-                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">0.5</text>
+                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">1.0</text>
             </g>
             <g
                id="g14509"
@@ -917,7 +917,7 @@
                  id="text14507"
                  y="-4.4408921e-16"
                  x="-6.9499998"
-                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">1.0</text>
+                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">2.0</text>
             </g>
             <g
                id="g14513"
@@ -926,7 +926,7 @@
                  id="text14511"
                  y="-4.4408921e-16"
                  x="-6.9499998"
-                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">1.5</text>
+                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">3.0</text>
             </g>
             <g
                id="g14517"
@@ -935,7 +935,7 @@
                  id="text14515"
                  y="-4.4408921e-16"
                  x="-6.9499998"
-                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">2.0</text>
+                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">4.0</text>
             </g>
           </g>
           <g
@@ -1382,7 +1382,7 @@
                  id="text14872"
                  y="-4.4408921e-16"
                  x="-6.9499998"
-                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">0.5</text>
+                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">1.0</text>
             </g>
             <g
                id="g14878"
@@ -1391,7 +1391,7 @@
                  id="text14876"
                  y="-4.4408921e-16"
                  x="-6.9499998"
-                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">1.0</text>
+                 style="font-weight:normal;font-size:10px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none">2.0</text>
             </g>
           </g>
           <g

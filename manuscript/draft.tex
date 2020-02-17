@@ -79,18 +79,17 @@ In this chapter we explore this concept by using simulations to estimate the eff
 
 
 \subsection{Coalescent simulations}
-To investigate genealogical variation along chromosomes we simulated genealogies under a range of species tree models in Python using the \emph{ipcoal} package \citep{mckenzie_ipcoal_2020}. This takes as input a tree topology and demographic parameters (divergence times, effective population sizes, mutation rate, and recombination rate) to generate a parameterized simulator for the program \emph{msprime} \citep{kelleher_efficient_2016}. Using this model we then simulated coalescent genealogies constrained by a species tree topology. To generate linked trees we simulated a 1Mb chromosome and recorded the true genealogy spanning each position of its length, since different genealogies span different intervals along the chromosome between recombination crossovers locations. To generate unlinked trees we simulated 500 independent loci of length one and stored the single observed genealogy from each locus. Species trees and genealogies were plotted and manipulated using the Python package \emph{toytree} \citep{eaton_toytree_2020}. Annotated code to reproduce all analyses in this chapter is organized into jupyter notebooks and available at https://github.com/eaton-lab/sptree-chapter.
+To investigate genealogical variation along chromosomes we simulated genealogies under a range of species tree models in Python using the \emph{ipcoal} package \citep{mckenzie_ipcoal_2020}. This takes as input a tree topology and demographic parameters (divergence times, effective population sizes, mutation rate, and recombination rate) to generate a parameterized simulator for the program \emph{msprime} \citep{kelleher_efficient_2016}. Using this model we then simulated coalescent genealogies constrained by a species tree topology. To generate linked trees we simulated a 1Mb chromosome and recorded the true genealogy spanning each position of its length, since different genealogies span different intervals along the chromosome between recombination crossover locations. To generate unlinked trees we simulated 1000 independent loci of length one and stored the single observed genealogy from each locus. Species trees and genealogies were plotted and manipulated using the Python package \emph{toytree} \citep{eaton_toytree_2020}. Annotated code to reproduce all analyses in this chapter is organized into jupyter notebooks and available at https://github.com/eaton-lab/sptree-chapter.
 
-The distributions of linked and unlinked genealogies simulated on the same species tree are easy to distinguish when visualized, as linked genealogies exhibit significant auto-correlation  while unlinked genealogies exhibit greater variation (Fig. 1). We explored a range of parameters to realistically describe linked and unlinked genealogical variation in genome-wide phylogenetic data sets. To focus our analyses on fewer total parameters we performed all simulations on completely imbalanced tree shapes (but different tree sizes) in which internode lengths and effective population sizes of internal edges are all set to be equal. All simulations were performed using a per-site per-generation recombination rate of 1e$^{-9}$, and in the case when sequence data was generated, a per-site per-generation mutation rate of 1e$^{-8}$ applied under the JC69 substitution model. The parameters we aim to investigate for their effect on the distribution of genealogies include tree size (number of tips), the probability of incongruence (internode edge lengths in coalescent units), and tree height (the number of generations between internodes). 
+The distributions of linked and unlinked genealogies simulated on the same species tree are easy to distinguish when visualized: linked genealogies exhibit significant auto-correlation whereas unlinked genealogies exhibit greater variation (Fig. 1c-d). We explored a range of parameters to realistically describe linked and unlinked genealogical variation in genome-wide phylogenetic data sets. To focus our analyses on fewer total parameters we performed all simulations on completely imbalanced tree shapes (but different tree sizes) in which internode lengths and effective population sizes of internal edges are all set to be equal. All simulations were performed using a per-site per-generation recombination rate of 1e$^{-9}$, and in the case when sequence data was generated, a per-site per-generation mutation rate of 1e$^{-8}$ applied under the JC69 substitution model. The parameters we aim to investigate for their effect on the distribution of genealogies include tree size (number of tips), the probability of incongruence (internode edge lengths in coalescent units), and tree height (the number of generations between internodes). 
 
 
 \begin{figure}
 	\centering
-		\includegraphics[width=0.8\textwidth]{./figures/Fig-1}
+		\includegraphics[width=0.9\textwidth]{./figures/Fig1-revision}
 		\caption{
-			The effect of genetic linkage on the distribution of genealogies simulated on two species trees with different numbers of tips but the same probability of incongruence at each edge (all internode lengths are 0.5 coalescent units). 	% The genome-wide distribution of genealogies differs from that among neighboring regions of the genome where genealogies are correlated, and the difference is greater in trees with more sampled tips. (a-b) 
-			% Linked or unlinked genealogies were simulated on two species trees the same probability of discordance between nodes (i.e., 		internode distances are the same in coalescent units). (c-f) 
-			Genealogies are plotted in the same tip order as the species trees to highlight incongruence (c-f). Linked genealogies are spatially correlated along the length of a chromosome, because many samples share the same ancestors until a recombination event occurs (c, e). Unlinked genealogies are independent and exhibit greater variation among a sampled set (d, f). Species trees with more tips exhibit a greater number of overall incongruent topologies, and thus neighboring linked genealogies in large trees are more similar to each other relative to random unlinked trees than in species trees with fewer tips.
+			The effect of genetic linkage on the spatial distribution of genealogies across a chromosome. (a) A species tree topology with edge lengths in coalescent units can fully describe the probability of incongruence among unlinked genealogies. (b) Coalescent units (t$_c$) are a composite of time in generations (t$_g$) and the effective populations size (N$_e$). The extent of linkage among genealogies is influenced by both t$_g$ and N$_e$, and thus not fully explained by t$_c$ alone. 
+			(c-d) Genealogies are plotted with tips in the same order as the species tree topology to highlight incongruence. Arrows indicate the positions of genealogies on a chromosome; linked genealogies are close together and unlinked genealogies are far apart. (c) Linked genealogies are spatially correlated because many samples share the same ancestors until a recombination event occurs. (d) Unlinked genealogies are independent and exhibit greater variation among a sampled set than linked genealogies.
 		}
 		\label{fig:1}
 \end{figure}
@@ -98,52 +97,94 @@ The distributions of linked and unlinked genealogies simulated on the same speci
 
 % Describe Figure 1: difference between linked and unlinked trees.
 \subsubsection{Units, space, and time}
-The effect of time, measured in units of generations, is not typically of interest for studies of the MSC, since the probability of incongruence (among unlinked genealogies) can be explained entirely by internode lengths measured in coalescent units ($t_c$), which is calculated as $t_{c} = t_{g} / 2N_{e}$, where $t_g$ is time in generations and $N_e$ is the effective population size. Because $t_c$ is a ratio of time and population size, the absolute value of $t_{g}$ has not been of interest, only its relation to $N_{e}$. However, in the context of a sequential coalescent process it turns out that $t_{g}$ does matter, since recombination is modeled as a per-generation process, and so both $t_g$ and $N_e$ affect the number of recombination events, and thus the similarity of neighboring genealogies.
+The effect of time, measured in units of generations, is not typically of interest for studies of the MSC, since the probability of incongruence (among unlinked genealogies) can be explained entirely by internode lengths measured in coalescent units ($t_c$), which is calculated as $t_{c} = t_{g} / 2N_{e}$, where $t_g$ is time in generations and $N_e$ is the effective population size. Because $t_c$ is a ratio of time and population size, the absolute value of $t_{g}$ has not been of interest, only its relation to $N_{e}$ (Fig. 1a-b). However, in the context of a sequential coalescent process it turns out that $t_{g}$ does matter, since recombination is modeled as a per-generation process, and so both $t_g$ and $N_e$ affect the number of recombination events, and thus the similarity of neighboring genealogies.
 
 % The effect of tree HEIGHT
-The effect of time in units of generations is demonstrated in Table 1. Here we simulated linked and unlinked genealogies on the same species trees, over a range of parameters, and in each data set measured the average Robinson-Foulds (RF) distance between all pairwise unlinked genealogies, and in the case of linked trees, between 1000 pairs of genealogies randomly sampled from positions that are spaced 10Kb apart. In the unlinked data sets $t_g$ has no effect on the similarity of genealogies -- only $t_c$ is relevant -- as has been traditionally recognized in the MSC. However, for linked genealogies $t_g$ has a large effect. When edge lengths are longer in units of generations the size of non-recombined blocks is smaller, and the average RF distance between neighboring genealogies is greater. 
+The effect of time in units of generations is demonstrated in Table 1. Here we simulated linked and unlinked genealogies on the same species trees, over a range of parameters, and in each data set measured the average Robinson-Foulds (RF) distance between all pairwise unlinked genealogies, and in the case of linked trees, between 1000 pairs of genealogies randomly sampled from positions that are spaced 5Kb apart. RF distances are reported here using normalized (scaled) values to account for differences in tree size, but non-normalized RF distances show the same qualitative results (not shown). In the unlinked data sets $t_g$ has no effect on the similarity of genealogies -- only $t_c$ is relevant -- as has been traditionally recognized in the MSC. However, for linked genealogies $t_g$ has a large effect. When edge lengths are longer in units of generations, and N$_e$ is similarly scaled to retain the same probability of incongruence (t$_c$), the size of non-recombined blocks becomes smaller, and the average RF distance between neighboring genealogies is greater. 
 % To keep $t_c$ constant we scaled $N_e$ as $t_g$ changes, but it should be noted that $Ne$ similarly affects the rate of observed recombination events in the history of the sample.
 
-A notable result of these simulations is the observation that the size of non-recombined genomic blocks becomes very small in certain regions of parameters space, particularly when the internode lengths in units of generations are very long. This is troubling for the MSC which requires that loci represent a single genealogical history as opposed to multiple concatenated genealogies. The impact of recombination within loci has been investigated previously, both in the first edition of this book \citep{castillo-ramirez_bayesian_2010}, as well as in a series of critical examinations of the impact of 'concatalescence' \citep{springer_gene_2016}. At issue is whether gene tree estimation error is elevated when concatenating data from multiple genealogies into a single locus. The results from our simulations suggest there are some regions of parameter space where the size of non-recombined blocks becomes quite small, and so this issue may warrant further examination. In this paper, however, rather than examine recombination and its effects as a critique on existing MSC approaches, we aim instead to explore how linkage among recombined genealogical blocks of the genome can possibly be a useful source of information when analysing whole genomes. 
+A notable result of these simulations is the observation that the size of non-recombined genomic blocks becomes very small in certain regions of parameter space, particularly when the internode lengths in units of generations are very long. This is troubling for the MSC which requires that loci represent a single genealogical history as opposed to multiple concatenated genealogies. The impact of recombination within loci has been investigated previously, both in the first edition of this book \citep{castillo-ramirez_bayesian_2010}, as well as in a series of critical examinations of the impact of 'concatalescence' \citep{springer_gene_2016}. At issue is whether gene tree estimation error is elevated when concatenating data from multiple genealogies into a single locus. The results from our simulations suggest there are some regions of parameter space where the size of non-recombined blocks becomes quite small, and so this issue may warrant further examination. In this paper, however, rather than examine recombination and its effects as a critique on existing MSC approaches, we aim instead to explore how linkage among recombined genealogical blocks of the genome can possibly be a useful source of information when analysing whole genomes. 
 
 
 \begin{table}
 \begin{center}
-\begin{tabular}{lrrrrrrrr}
+\begin{tabular}{lrrr|rr|rccr}
+
 \toprule
-{} &  Ntips &  t$_c$ &  t$_g$ &   N$_e$  &  block-size  & RF$_{unlinked}$ & RF$_{linked}$ &  half-life\\
+{} &  Ntips &    T$_g$ &  t$_c$ &  t$_g$ &  N$_e$ &  block-size &  RF$_{unlinked}$ &  RF$_{linked-5K}$ &  half-life \\
 \midrule
-0  &     10 &  0.20 &   1e4 &  2.5e4 &  1706  &     14.58 &     9.13  &  6576   \\
-1  &     10 &  0.20 &   1e5 &  2.5e5 &   174  &     14.59 &    14.49  &  607  \\
-2  &     10 &  0.20 &   1e6 &  2.5e6 &    18  &     14.59 &    14.51  &  67  \\
-3  &     10 &  1.00 &   1e4 &  5.0e3 &  4761  &      7.79 &     2.91  &  16715  \\
-4  &     10 &  1.00 &   1e5 &  5.0e4 &   525  &      7.81 &     6.48  &  2359  \\
-5  &     10 &  1.00 &   1e6 &  5.0e5 &    56  &      7.79 &     7.57  &  270  \\
-6  &     10 &  2.00 &   1e4 &  2.5e3 &  8849  &      2.86 &     0.50  &  22627  \\
-7  &     10 &  2.00 &   1e5 &  2.5e4 &   906  &      2.87 &     2.19  &  4659  \\
-8  &     10 &  2.00 &   1e6 &  2.5e5 &    93  &      2.88 &     2.88  &  443  \\
-\hline
-9  &     50 &  0.20 &   2e3 &  5.0e3 &   1485 &    91.50 &    36.58   &  15890  \\
-10 &     50 &  0.20 &   2e4 &  5.0e4 &    149 &    91.51 &    83.36   &  1838  \\
-11 &     50 &  0.20 &   2e5 &  5.0e5 &     15 &    91.63 &    91.61   &  185  \\
-12 &     50 &  1.00 &   2e3 &  1.0e3 &   4830 &    46.82 &     3.80   &  84732  \\
-13 &     50 &  1.00 &   2e4 &  1.0e4 &    509 &    46.90 &    24.60   &  11884  \\
-14 &     50 &  1.00 &   2e5 &  1.0e5 &     51 &    46.77 &    45.00   &  1233  \\
-15 &     50 &  2.00 &   2e3 &  5.0e2 &   9900 &    17.16 &     0.49   &  124416  \\
-16 &     50 &  2.00 &   2e4 &  5.0e3 &    866 &    17.22 &     5.29   &  23019  \\
-17 &     50 &  2.00 &   2e5 &  5.0e4 &     87 &    17.23 &    16.08   &  2048  \\
-\hline
-18 &    100 &  0.20 &   1e3 &  2.5e3 &   1345 &     187.62 &    47.74  &  26873   \\
-19 &    100 &  0.20 &   1e4 &  2.5e4 &    138 &     187.60 &   156.68  &  3128   \\
-20 &    100 &  0.20 &   1e5 &  2.5e5 &     14 &     187.65 &   186.65  &  345   \\
-21 &    100 &  1.00 &   1e3 &  5.0e2 &   5405 &      95.23 &     3.95  &  178443   \\
-22 &    100 &  1.00 &   1e4 &  5.0e3 &    474 &      95.16 &    30.32  &  22688  \\
-23 &    100 &  1.00 &   1e5 &  5.0e4 &     51 &      94.91 &    85.61  &  2499   \\
-24 &    100 &  2.00 &   1e3 &  2.5e2 &   7299 &      35.40 &     1.24  &  218558   \\
-25 &    100 &  2.00 &   1e4 &  2.5e3 &    877 &      35.37 &     6.44  &  39616   \\
-26 &    100 &  2.00 &   1e5 &  2.5e4 &     85 &      35.33 &    28.59  &  4169   \\
+0  &     10 &    1e5 &    0.2 &  1e4 &    25000 &     1706 &      0.40 &         0.19 &     6576 \\
+1  &     10 &    1e6 &    0.2 &  1e5 &   250000 &      174 &      0.40 &         0.40 &      607 \\
+2  &     10 &    1e7 &    0.2 &  1e6 &  2500000 &       18 &      0.40 &         0.40 &       67 \\
+3  &     10 &    1e5 &    1.0 &  1e4 &     5000 &     4761 &      0.22 &         0.05 &    16715 \\
+4  &     10 &    1e6 &    1.0 &  1e5 &    50000 &      525 &      0.22 &         0.15 &     2359 \\
+5  &     10 &    1e7 &    1.0 &  1e6 &   500000 &       56 &      0.22 &         0.20 &      270 \\
+6  &     10 &    1e5 &    2.0 &  1e4 &     2500 &     8849 &      0.08 &         0.01 &    22627 \\
+7  &     10 &    1e6 &    2.0 &  1e5 &    25000 &      906 &      0.08 &         0.05 &     4659 \\
+8  &     10 &    1e7 &    2.0 &  1e6 &   250000 &       93 &      0.08 &         0.08 &      443 \\
+% \midrule
+9  &     50 &    1e5 &    0.2 &  2e3 &     5000 &     1485 &      0.47 &         0.13 &    15890 \\
+10 &     50 &    1e6 &    0.2 &  2e4 &    50000 &      149 &      0.47 &         0.39 &     1838 \\
+11 &     50 &    1e7 &    0.2 &  2e5 &   500000 &       15 &      0.47 &         0.47 &      185 \\
+12 &     50 &    1e5 &    1.0 &  2e3 &     1000 &     4830 &      0.24 &         0.01 &    84731 \\
+13 &     50 &    1e6 &    1.0 &  2e4 &    10000 &      509 &      0.24 &         0.09 &    11884 \\
+14 &     50 &    1e7 &    1.0 &  2e5 &   100000 &       51 &      0.24 &         0.22 &     1233 \\
+15 &     50 &    1e5 &    2.0 &  2e3 &      500 &     9900 &      0.09 &         0.00 &   124415 \\
+16 &     50 &    1e6 &    2.0 &  2e4 &     5000 &      866 &      0.09 &         0.02 &    23019 \\
+17 &     50 &    1e7 &    2.0 &  2e5 &    50000 &       87 &      0.09 &         0.08 &     2048 \\
+% \midrule
+18 &    100 &    1e5 &    0.2 &  1e3 &     2500 &     1345 &      0.47 &         0.08 &    26873 \\
+19 &    100 &    1e6 &    0.2 &  1e4 &    25000 &      138 &      0.47 &         0.34 &     3128 \\
+20 &    100 &    1e7 &    0.2 &  1e5 &   250000 &       14 &      0.47 &         0.47 &      345 \\
+21 &    100 &    1e5 &    1.0 &  1e3 &      500 &     5405 &      0.24 &         0.01 &   178444 \\
+22 &    100 &    1e6 &    1.0 &  1e4 &     5000 &      474 &      0.24 &         0.05 &    22688 \\
+23 &    100 &    1e7 &    1.0 &  1e5 &    50000 &       51 &      0.24 &         0.19 &     2499 \\
+24 &    100 &    1e5 &    2.0 &  1e3 &      250 &     7299 &      0.09 &         0.00 &   218558 \\
+25 &    100 &    1e6 &    2.0 &  1e4 &     2500 &      877 &      0.09 &         0.01 &    39616 \\
+26 &    100 &    1e7 &    2.0 &  1e5 &    25000 &       85 &      0.09 &         0.06 &     4169 \\
 \bottomrule
 \end{tabular}
+
+% THE EARLIER RESULTS FROM NON-STANDARDIZED RFs
+
+% \begin{center}
+% \begin{tabular}{lrrrrrrrr}
+% \toprule
+% {} &  Ntips &  t$_c$ &  t$_g$ &   N$_e$  &  block-size  & RF$_{unlinked}$ & RF$_{linked}$ &  half-life\\
+% \midrule
+% 0  &     10 &  0.20 &   1e4 &  2.5e4 &  1706  &     14.58 &     9.13  &  6576   \\
+% 1  &     10 &  0.20 &   1e5 &  2.5e5 &   174  &     14.59 &    14.49  &  607  \\
+% 2  &     10 &  0.20 &   1e6 &  2.5e6 &    18  &     14.59 &    14.51  &  67  \\
+% 3  &     10 &  1.00 &   1e4 &  5.0e3 &  4761  &      7.79 &     2.91  &  16715  \\
+% 4  &     10 &  1.00 &   1e5 &  5.0e4 &   525  &      7.81 &     6.48  &  2359  \\
+% 5  &     10 &  1.00 &   1e6 &  5.0e5 &    56  &      7.79 &     7.57  &  270  \\
+% 6  &     10 &  2.00 &   1e4 &  2.5e3 &  8849  &      2.86 &     0.50  &  22627  \\
+% 7  &     10 &  2.00 &   1e5 &  2.5e4 &   906  &      2.87 &     2.19  &  4659  \\
+% 8  &     10 &  2.00 &   1e6 &  2.5e5 &    93  &      2.88 &     2.88  &  443  \\
+% \hline
+% 9  &     50 &  0.20 &   2e3 &  5.0e3 &   1485 &    91.50 &    36.58   &  15890  \\
+% 10 &     50 &  0.20 &   2e4 &  5.0e4 &    149 &    91.51 &    83.36   &  1838  \\
+% 11 &     50 &  0.20 &   2e5 &  5.0e5 &     15 &    91.63 &    91.61   &  185  \\
+% 12 &     50 &  1.00 &   2e3 &  1.0e3 &   4830 &    46.82 &     3.80   &  84732  \\
+% 13 &     50 &  1.00 &   2e4 &  1.0e4 &    509 &    46.90 &    24.60   &  11884  \\
+% 14 &     50 &  1.00 &   2e5 &  1.0e5 &     51 &    46.77 &    45.00   &  1233  \\
+% 15 &     50 &  2.00 &   2e3 &  5.0e2 &   9900 &    17.16 &     0.49   &  124416  \\
+% 16 &     50 &  2.00 &   2e4 &  5.0e3 &    866 &    17.22 &     5.29   &  23019  \\
+% 17 &     50 &  2.00 &   2e5 &  5.0e4 &     87 &    17.23 &    16.08   &  2048  \\
+% \hline
+% 18 &    100 &  0.20 &   1e3 &  2.5e3 &   1345 &     187.62 &    47.74  &  26873   \\
+% 19 &    100 &  0.20 &   1e4 &  2.5e4 &    138 &     187.60 &   156.68  &  3128   \\
+% 20 &    100 &  0.20 &   1e5 &  2.5e5 &     14 &     187.65 &   186.65  &  345   \\
+% 21 &    100 &  1.00 &   1e3 &  5.0e2 &   5405 &      95.23 &     3.95  &  178443   \\
+% 22 &    100 &  1.00 &   1e4 &  5.0e3 &    474 &      95.16 &    30.32  &  22688  \\
+% 23 &    100 &  1.00 &   1e5 &  5.0e4 &     51 &      94.91 &    85.61  &  2499   \\
+% 24 &    100 &  2.00 &   1e3 &  2.5e2 &   7299 &      35.40 &     1.24  &  218558   \\
+% 25 &    100 &  2.00 &   1e4 &  2.5e3 &    877 &      35.37 &     6.44  &  39616   \\
+% 26 &    100 &  2.00 &   1e5 &  2.5e4 &     85 &      35.33 &    28.59  &  4169   \\
+% \bottomrule
+% \end{tabular}
+
+
 
 % \toprule
 % Ntips & $T_g$  &  $t_g$ &  $t_c$ &  $N_e$  &  gblock size &  RF-unlinked &  RF-linked-5K & RF-linked-10K \\
@@ -163,24 +204,29 @@ A notable result of these simulations is the observation that the size of non-re
 	Parameter settings used in simulations to examine the distribution of 
 	linked versus unlinked genealogies generated on the same species tree.
 	All simulations were performed on an imbalanced species tree with uniform 
-	internode edge lengths. The edge lengths in units of generations ($t_g$) 
-	were scaled with tree size and height to generate edge lengths in 
-	coalescent ($t_c$) units of 0.2, 1.0, or 2.0. Results are reported as mean values from 500 simulated 
-	genealogies. The size of non-recombined genomic	blocks (block-size) decreases with time in generations. This affects the RF distance between linked genealogies, but not unlinked genealogies. The RF$_unlinked$ distance is shown for random pairs of genealogies separated by 10Kb. The phylogenetic half-life was calculated from fitting an exponential curve to the rate of decay of phylogenetic linkage.
+	internode edge lengths. Three free parameters were explored: the number of tips (Ntips)
+	on the tree, total tree height in generations (T$_g$), and internode edge lengths
+	in coalescent units (t$_c$). Two additional parameters are shown for which 
+	values were determined entirely by values of the free parameters: the internode length
+	in units of generations (t$_g$) is determined by T$_g$ and Ntips, 
+	and effective population size (N$_e$) is determined by t$_c$ and t$_g$. 
+	Results are reported as the mean values calculated from 1000 simulated 
+	genealogies. The size of non-recombined genomic	blocks (block-size) decreases with time in generations. This affects the RF distance between linked genealogies, but not unlinked genealogies. RF$_{linked-5K}$ is the RF distances among linked trees separated by 5Kb on a chromosome. The phylogenetic half-life was calculated from fitting an exponential curve to the rate of decay of phylogenetic linkage.
 }
 \end{table}
 
 \subsubsection{Tree size, tree space, and phylogenetic decay}
 The enormous size of phylogenetic tree space is a constant source of computational burden in phylogenetics, but intriguingly, it may actually provide a source of information in the context of the sequential coalescent process. This is because as the size of tree space grows in larger data sets so too does the expected RF distance between any two random unlinked genealogies. This is particularly true when $t_c$ is very small, such that all coalescent events occur deeper than the root of the species tree. In this case the topology of unlinked genealogies is hardly constrained by the species tree at all, and almost any genealogy can be observed. However, adjacent genealogies on the same chromosome are still expected to share significant similarity, since few recombination events are likely to have occurred between them.  Consequently, the degree to which linked genealogies are more similar to each other, \emph{relative} to the similarity among unlinked genealogies, is a function of parameters of the species tree, including the tree size.
 
-This type of relative measurement provides a means to develop a statistic to describe the rate of decay of spatial auto-correlation in genealogies across a genome. We propose the term "phylogenetic linkage" ($PL$) to describe the ratio of RF distances among linked genealogies separated by some genetic distance in the genome relative to the average RF distance among unlinked genealogies. In other words, if two genealogies spaced $d$ distance apart on a chromosome are as different from each other as two randomly sampled unlinked genealogies are on average, then they are effectively unlinked. 
+This type of relative measurement provides a means to develop a statistic to describe the rate of decay of spatial auto-correlation in genealogies across a genome. We propose the term "phylogenetic linkage" ($PL$) to describe the ratio of RF distances among linked genealogies separated by some genetic distance in the genome relative to the average RF distance among unlinked genealogies. 
 
 $$ PL(d) = 1 - (RF(d)_{linked} / RF_{unlinked}) $$
 % $$ \lambda_{d} = 1 - (RF_{linked} / RF_{unlinked}) $$
 
-By measuring phylogenetic linkage at increasing genetic distances between genealogies we can infer a rate of decay of phylogenetic linkage across the genome. For each simulated data set we then fit an exponential decay function using the \emph{scipy} package in Python. From the estimated decay rate parameter ($\lambda_d$) we then estimated a phylogenetic linkage half-life, representing the distance in bp at which two genealogies are expected to lose half of their phylogenetic linkage (Table 1; Fig. 2). 
+\noindent In other words, if two genealogies spaced $d$ distance apart on a chromosome are as different from each other as two randomly sampled unlinked genealogies are on average, then they are effectively unlinked. By measuring phylogenetic linkage at increasing genetic distances between genealogies we can infer a rate of decay of phylogenetic linkage across the genome. For each simulated data set we then fit an exponential decay function using the \emph{scipy} package in Python. From the estimated decay rate parameter ($\lambda_d$) we estimated a phylogenetic linkage half-life, representing the distance in bp at which two genealogies are expected to lose half of their phylogenetic linkage (Table 1; Fig. 2). 
 
-When $t_g$ is larger phylogenetic decay occurs faster, since more recombination events are possible over each internal edge of the tree. Similarly, when $N_e$ is greater (i.e., $t_c$ smaller) recombination events are more likely to cause a change in the topology, and thus phylogenetic linkage decays faster. Finally, when the total tree size is greater linkage decay occurs more slowly, since the average difference between unlinked genealogies is much greater, and thus it takes longer for sufficient spatial information to decay to approach the unlinked mean RF distance. This is best demonstrated by examining rows like 0 and 19 in Table 1, which are identical in parameter settings except for tree size. The rate of decay of phylogenetic linkage is slower in larger trees which exhibit much greater unlinked RF distances.
+When t$_g$ is larger phylogenetic decay occurs faster, since more recombination events are possible over each internal edge of the tree (e.g., compare rows 0 and 7 in Table 1). Similarly, when $N_e$ is greater recombination events are more likely to cause a change in the topology, and thus phylogenetic linkage decays faster (e.g., compare rows 0, 3, and 6 in Table 1). Finally, when the total tree size (Ntips) is greater, the decay of linkage occurs more slowly, since the average difference between unlinked genealogies is greater, and thus it takes longer for sufficient spatial information to decay to approach the unlinked mean RF distance (e.g., compare rows 0, 9, and 18 in Table 1). 
+% The rate of decay of phylogenetic linkage is slower in larger trees which exhibit greater total unlinked RF distances, and thus a slower rate at which linked RF distances approach the unlinked distance. 
 
 % The expectation that many gene trees can be sampled from the genome and still have not even one match the true species tree has been demonstrated both theoretically (...) and empirically (rokas). For large trees this also means that \emph{linked genealogies}, in which some samples share the same ancestors in one sampled genealogy as in another, will appear more similar to each other compared to a random expectation in larger trees than they do in smaller trees. 
 
@@ -189,7 +235,7 @@ When $t_g$ is larger phylogenetic decay occurs faster, since more recombination 
 	\centering
 		\includegraphics[width=0.8\textwidth]{./figures/Fig-2}
 		\caption{
-		The RF distance between genealogies separated spatially on a chromosome plateaus as linkage decays by recombination, and  approaches the average RF distance between unlinked genealogies (a). The ratio of RF distances between linked and unlinked genealogies (phylogenetic linkage) measured at different genetic distances approximates an exponential decay function (b). Results are shown for data simulated on a 100 tip species tree with internal edge lengths of $t_g$=1e4 generations, and $Ne$ of 1e5, 2e5, or 1e4, corresponding to edge lengths in coalescent units ($t_c$) of 0.2, 1.0, and 2.0, respectively. 
+		The RF distance between genealogies separated spatially on a chromosome plateaus as linkage decays by recombination, and  approaches the average RF distance between unlinked genealogies (a). The ratio of RF distances between linked and unlinked genealogies (phylogenetic linkage) measured at different genetic distances approximates an exponential decay function (b). Results are shown for data simulated on a 100 tip species tree with total tree height of $T_g$=1e6 generations, and $N_e$ of 2.5e$^4$, 5e$^4$, or 2.5e$^3$, corresponding to edge lengths in coalescent units ($t_c$) of 0.2, 1.0, and 2.0, respectively. 
 		% Lower $t_c$ and $Ne$ causes a slower rate of decay of linkage. 
 		}
 		\label{fig:2}
@@ -210,32 +256,43 @@ When $t_g$ is larger phylogenetic decay occurs faster, since more recombination 
 
 Unlike in simulations, the true genealogical history for any region of the genome is an unknown and unobservable variable. It is something we must infer based on the signal left by the mutational process. So how can our understanding of the decay of phylogenetic linkage be useful in the context of gene tree inference? One way to approach this problem is to ask what is the expected length over which a site supporting a bipartition in one position of the genome continues to be true in neighboring regions of the genome? 
 
-The standard sliding window approach gives equal weight to all sites within an alignment window. An alternative approach could be to extend the size of the window to ensure that there is sufficient information to infer a resolved gene tree, but to apply variable weights to sites in the alignment such that those near the center of the window have greatest weight, and can override alternative signals. This has the effect that if no local information exists to support the true local genealogy then data from more distant regions can inform that part of the tree, but with decreasing weight as their probability of representing the same genealogy decays with distance. 
+The standard sliding window approach gives equal weight to all sites within an alignment window. An alternative approach could be to extend the size of the window to ensure that there is sufficient information to infer a resolved gene tree, but to apply variable weights to sites in the alignment such that those near the center of the window have greatest weight, and can override alternative signals (Fig. 3a). This has the effect that if no local information exists to support the true local genealogy then data from more distant regions can inform that part of the tree, but with decreasing weight as their probability of representing the same genealogy decays with distance. 
 
 % At extreme distances many alternative genealogies are given low weight, which effectively ... weight that converges towards the average information from all unlinked regions, which could be considered a random sample from the species tree.
 
-We implemented a weighted approach to local gene tree inference by using the "-a" weights file argument during maximum likelihood tree estimation in RAxML v.8.2.12 \citep{stamatakis_raxml_2014}. A distribution of site weights was generated to give exponentially decreasing weight to sites on either side of a central position. For computational efficiency we cut-off the window size to the left and right of the center at sites where the weight reached 1/1000 of the center, given the exponential decay rate parameter estimated for that data set.
-
-Decay-weighted gene tree inference was compared to traditional windows with uniform (no) weights. Gene trees were inferred at 25 positions spaced evenly across a 1Mb simulated chromosome. At each position the RF distance between the true genealogy and the inferred gene tree was recorded to measure gene tree estimation accuracy. We tested uniform windows of lengths 1Kb, 2.5Kb, 10Kb, 250Kb, 100Kb, and 1Mb, the last of which represents the total concatenated chromosome gene tree. Decay-function weighted gene trees were estimated in windows with a size determined by the decay rate, and we additionally tested decay rates with 5X and 10X faster rates to examine sensitivity to rate estimation. Gene tree inference comparisons were performed on data set 10 from Table 1, which was selected for its fast rate of decay and high incongruence so that many distinct genealogies would be observed across the chromosome.
-
-The decay-function weighted windows inferred more accurate gene trees on average than uniform windows (Fig. 3). Of the uniform windows, the largest size, representing concatenation of the entire chromosome, performed the worst, while the best window size appears to be between 1000-2500bp. All three decay-function weighted window sizes had lower mean RF scores (greater accuracy) than the best scoring uniform window. The best estimates were observed for the 5X decay rate window, which had a mean RF distance of only 33.2, making it approximately twice as accurate as uniform windows of size 1Kb or 25Kbp. The reason a 5X decay rate performed better than the estimated decay rate may be caused by the cut-off to weighted window sizes that we implemented to improve run times. Additional parameters that we did not explore like the mutation rate and recombination rate will additionally affect the information content within each non-recombined genomic block.
+We implemented a weighted approach to local gene tree inference by using the "-a" weights file argument during maximum likelihood tree estimation in RAxML v.8.2.12 \citep{stamatakis_raxml_2014}. A distribution of site weights was generated to give exponentially decreasing weight to sites on either side of a central position. For computational efficiency we cut off the window size to the left and right of the center at sites where the weight reached 1/10000 of the center given the exponential decay rate parameter estimated for that data set.
 
 
 \begin{figure}
 	\centering
-		\includegraphics[width=0.8\textwidth]{./figures/Fig-3-post2}
+		\includegraphics[width=0.99\textwidth]{./figures/Fig-3-post-revision}
 		\caption{
-			Gene tree estimation error at sampled points across a chromosome using different sized alignment windows. Windows with uniform (no) weights performed worse than those with weights distributed by a phylogenetic decay-function, as measured by the RF distance between inferred gene trees and the true simulated genealogy. 
+			The accuracy of gene tree inference in sliding windows along a 
+			chromosome. (a) We compared windows that were of a fixed length and 
+			with uniform site weights to windows with lengths and weights 
+			determined by a function of exponentially decaying phylogenetic 
+			linkage inferred from simulations under the species tree parameters. 
+			(b) The scaled RF distance between inferred gene trees and the 
+			true simulated genealogy at 50 positions across a genome measured 
+			with different window sizes and weightings.
+			(c) Windows with uniform (no) weights inferred less accurate gene
+			trees than those with weights distributed by a phylogenetic 
+			decay-function, as measured by the mean scaled RF distance to the 
+			true simulated genealogies.
 		}
 \end{figure}
 
+Decay-weighted gene tree inference was compared to traditional windows with uniform (no) weights. Gene trees were inferred at 50 positions spaced evenly across a 1Mb simulated chromosome. At each position the RF distance between the true genealogy and the inferred gene tree was recorded to measure gene tree estimation accuracy. We tested uniform windows of lengths 1Kb, 2.5Kb, 10Kb, 25Kb, 100Kb, and 1Mb, the last of which represents the total concatenated chromosome gene tree. Decay-function weighted gene trees were estimated in windows with a size determined by the decay rate, and we additionally tested decay rates with 2X, 5X and 10X faster rates to examine sensitivity to rate estimation. We show results for simulations performed on data set 10 from Table 1, which was selected for its fast rate of decay and high incongruence so that many distinct genealogies would be observed across the chromosome.
+
+The decay-function weighted windows inferred more accurate gene trees on average than uniform windows (Fig. 3b-c). Of the uniform windows, the largest size, representing concatenation of the entire chromosome, performed the worst, while the best window size appears to be near 2.5Kb. All four decay-function weighted window sizes tested had lower mean RF scores (greater accuracy) than the best scoring uniform window. The best estimate was observed for the 5X decay rate window, which had a mean scaled RF distance of only 0.18, making it more than  twice as accurate as the genome-wide concatenation gene tree. In non-scaled RF scores this represents an average of 35 differences from the true genealogy compared to 43 differences in the 2.5Kb uniform windows, 51 in 10Kb windows, and 80 in the concatenation gene tree. The reason a 5X decay rate performed better than the estimated decay rate may be caused by the cut off to weighted window sizes that we implemented to improve run times. Additional parameters that we did not explore here, such as the mutation rate and recombination rate, are likely to be important factors as well, since they affect the information content within each non-recombined genomic block.
+
 
 \subsubsection*{Conclusions}
-For over a decade the goal of phylogenomic analyses has primarily focused on inferring a single species tree to represent the distribution of genealogical variation across the entire genome. However, as whole genome data has now become available, there is increasing interest in the spatial distribution of genealogies at specific locations across the genome. This type of local ancestry information can be useful for testing evolutionary questions about patterns of hemiplasy versus convergence \citep{guerrero_quantifying_2018}, for identifying introgressed regions \citep{fang_estimating_2020}, and testing hypotheses about adaptation \citep{martin_recombination_2019}. However, despite the development of advanced hierarchical models for inferring species trees, such methods have yet to be developed for spatially linked gene tree estimation.
+For over a decade the goal of phylogenomic analyses has primarily focused on inferring a single species tree to represent the distribution of genealogical variation across the entire genome. However, as whole genome data becomes available there is increasing interest in the spatial distribution of genealogies at specific locations across the genome. This type of local ancestry information can be useful for testing evolutionary questions about patterns of hemiplasy versus convergence \citep{guerrero_quantifying_2018}, for identifying introgressed regions \citep{fang_estimating_2020}, and testing hypotheses about adaptation \citep{martin_recombination_2019}. Despite the development of advanced hierarchical models for inferring species trees, such methods have yet to be developed for spatially linked gene tree estimation.
 
-Here we have demonstrated that the probability of incongruence described by the edge lengths of a species tree in coalescent units does not capture the expected spatial similarity of genealogies across chromosomes. Instead, in addition to the ratio of $t_g$ to $Ne$, which describes the probability of incongruence, it becomes necessary to consider their magnitudes as well. This presents an interesting scenario, where the same $t_c$ edge lengths may be observed in two different clades on a species tree, and one is composed of high $N_e$ and $t_g$, while the other has low $N_e$ and $t_g$. Despite having the same probability of incongruence, the two clades would exhibit very different rates of change in their topology per unit length spatially across the genome. Unlike in our simulations, the rate of decay would likely not be uniform, and would covary more among some edges than others. 
+Here we have demonstrated that the probability of incongruence described by the edge lengths of a species tree in coalescent units does not capture the expected spatial similarity of genealogies across chromosomes. Instead, in addition to the ratio of $t_g$ to $N_e$, which describes the probability of incongruence, it becomes necessary to consider their magnitudes as well. This presents an interesting scenario to consider, where the same $t_c$ edge lengths may be observed in two different clades on a species tree, but one is composed of high $N_e$ and $t_g$, while the other has low $N_e$ and $t_g$. Despite having the same probability of incongruence, the two clades would exhibit very different rates of change in their topology per unit length spatially across the genome. Unlike in our simulations, the rate of decay would likely not be uniform, and would covary more among some edges than others. 
 
-In theory, this expectation could be built into sliding window analyses based on a parameterized species tree inferred from unlinked loci. The simple approach that we implemented here, applying weights to alignment windows, is only a first step. A more appropriate direction to focus in the future would be to use species tree information to establish tree topology priors, in a Bayesian context, that could be used to improve local gene tree estimation by combining both the expected genome-wide distribution of genealogies as well as the expected similarity among neighboring genealogies. In contrast to treating recombination as a source of error for phylogenetic analyses, this direction of research aims to accommodate recombination as a source of historical information. It is no doubt that the MSC will continue to be extended to meet the needs introduced by new types of data, and the many questions that they inspire. 
+In theory, this expectation could be built into sliding window analyses based on a parameterized species tree inferred from unlinked loci. The simple approach that we implemented here, applying weights to alignment windows, is only a first step. A more appropriate direction to focus in the future would be to use species tree information to establish tree topology priors in a Bayesian context that could be used to improve local gene tree estimation by combining both the expected genome-wide distribution of genealogies as well as the expected similarity among neighboring genealogies. In contrast to treating recombination as a source of error for phylogenetic analyses, this direction of research aims to accommodate recombination as a source of historical information. It is no doubt that the MSC will continue to be extended to meet the needs introduced by new types of data, and the many questions that they inspire. 
 
 
 \bibliographystyle{ecol_let}
@@ -243,7 +300,7 @@ In theory, this expectation could be built into sliding window analyses based on
 
 
 \section*{Acknowledgments}
-We thank Lacey Knowles and Laura Kubatko for organizing the Estimating Species book volumes and for inviting us to contribute. This work was supported by a NSF Graduate Research Fellowship to P.F.M and by Columbia University startup funding to D.E. 
+We thank Lacey Knowles and Laura Kubatko for organizing the Estimating Species Trees book volumes and for inviting us to contribute. This work was supported by a NSF Graduate Research Fellowship to P. McKenzie and NSF grant DEB 1557059 to D. Eaton.
 
 \end{document}
 
