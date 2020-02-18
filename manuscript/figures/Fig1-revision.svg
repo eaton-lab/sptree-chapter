@@ -349,11 +349,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="379.9546"
-     inkscape:cy="79.782133"
+     inkscape:zoom="1.4"
+     inkscape:cx="469.73712"
+     inkscape:cy="117.9319"
      inkscape:document-units="mm"
-     inkscape:current-layer="g38204"
+     inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
      inkscape:window-width="1860"
@@ -369,7 +369,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -2220,10 +2220,7 @@
        style="font-weight:bold;font-size:2.37483621px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none;stroke-width:0.16991872;stroke-opacity:1"
        x="-284.4079"
        y="95.737862"
-       id="text25670">Time (generations x 1e<tspan
-   style="font-size:64.99999762%;baseline-shift:super"
-   id="tspan49343">6</tspan>
-)</text>
+       id="text25670">Time (generations x 1e6)</text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.88055563px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.25185853"
@@ -2293,20 +2290,18 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.17500091px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="9.0179081"
-       y="266.46442"
+       x="8.4887419"
+       y="265.93524"
        id="text27093"><tspan
          sodipodi:role="line"
          id="tspan27091"
-         x="9.0179081"
-         y="266.46442"
+         x="8.4887419"
+         y="265.93524"
          style="stroke-width:0.26458332">T<tspan
    style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan27142">g</tspan>=<tspan
    style="fill:#666666"
-   id="tspan55810">1e</tspan><tspan
-   style="font-size:64.99999762%;baseline-shift:super;fill:#666666"
-   id="tspan27144">6</tspan><tspan
+   id="tspan55810">1e6</tspan><tspan
    style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan27095"> </tspan></tspan></text>
     <path
@@ -2318,20 +2313,18 @@
     <text
        id="text27103"
        y="268.26312"
-       x="23.568066"
+       x="23.038898"
        style="font-style:normal;font-weight:normal;font-size:3.17500091px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        xml:space="preserve"><tspan
          style="stroke-width:0.26458332"
          y="268.26312"
-         x="23.568066"
+         x="23.038898"
          id="tspan27101"
          sodipodi:role="line">t<tspan
    style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan42849">g</tspan>=<tspan
    style="fill:#666666"
-   id="tspan55812">1e</tspan><tspan
-   style="font-size:64.99999762%;baseline-shift:super;fill:#666666"
-   id="tspan42851">5</tspan></tspan></text>
+   id="tspan55812">1e5</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.17500019px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -10618,10 +10611,7 @@
        y="95.737862"
        x="-230.51543"
        style="font-weight:bold;font-size:2.37483621px;font-family:helvetica;white-space:pre;fill:#282623;fill-opacity:1;stroke:none;stroke-width:0.16991872;stroke-opacity:1"
-       transform="rotate(-90)">Time (generations x 1e<tspan
-   id="tspan55806"
-   style="font-size:64.99999762%;baseline-shift:super">6</tspan>
-)</text>
+       transform="rotate(-90)">Time (generations x 1e6)</text>
     <path
        sodipodi:nodetypes="cc"
        style="fill:none;stroke:#000000;stroke-width:0.17638889;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -10669,9 +10659,7 @@
    style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan58183">e</tspan>=<tspan
    style="fill:#666666"
-   id="tspan58218">1e</tspan><tspan
-   style="font-size:64.99999762%;baseline-shift:super;fill:#666666"
-   id="tspan58185">5</tspan></tspan></text>
+   id="tspan58218">1e5</tspan></tspan></text>
     <path
        inkscape:connector-curvature="0"
        id="path58187"
